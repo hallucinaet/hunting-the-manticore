@@ -1,29 +1,22 @@
 ﻿int manticoreHP = 10;
 int cityHP = 15;
 int round = 1;
-int manticoreDistance;
 int cannonDamage;
 int targetRange;
 
-while (true)
-{
-    Console.Write("Player 1, how far away from the city do you want to station the Manticore? (0 to 100): ");
-    manticoreDistance = Convert.ToInt32(Console.ReadLine());
-
-    if (manticoreDistance >= 0 && manticoreDistance <= 100) break;
-}
-
+int manticoreDistance = AskForNumberInRange("Player 1, how far away from the city do you want to station the Manticore? (0 to 100):", 0, 100);
 Console.Clear();
+
 Console.WriteLine("Player 2, it is your turn.");
 
 while (cityHP > 0 && manticoreHP > 0)
 {
     ShowGameStatus();
-    CalculateCannonDamage();
+    cannonDamage = CalculateCannonDamage();
     Console.WriteLine($"The cannon is expected to deal {cannonDamage} this round.");
     FireTheCannon();
 
-    cityHP -= 1;
+    if (manticoreHP > 0) cityHP -= 1;
     round++;
 }
 
@@ -32,25 +25,43 @@ if (cityHP <= 0)
 else if (manticoreHP <= 0)
     Console.WriteLine("The Manticore has been destroyed! The city of Consolas has been saved!");
 
+// ---------- METHODS ----------
+
+int AskForNumber(string text)
+{
+    Console.Write(text + " ");
+    int number = Convert.ToInt32(Console.ReadLine());
+    return number;
+}
+
+int AskForNumberInRange(string text, int min, int max)
+{
+    while (true)
+    {
+        int number = AskForNumber(text);
+        if (number > min || number < max)
+            return number;
+    }
+}
+
 void ShowGameStatus()
 {
     Console.WriteLine("-----------------------------------------------------------");
     Console.WriteLine($"[STATUS] Round: {round} - City: {cityHP}/15 - Manticore: {manticoreHP}/10");
 }
 
-void CalculateCannonDamage()
+int CalculateCannonDamage()
 {
     if (round % 5 == 0 && round % 3 == 0)
-        cannonDamage = 10;
+        return 10;
     else if (round % 5 == 0 || round % 3 == 0)
-        cannonDamage = 3;
-    else cannonDamage = 1;
+        return 3;
+    else return 1;
 }
 
 void FireTheCannon()
 {
-    Console.Write("Enter desired cannon range: ");
-    targetRange = Convert.ToInt32(Console.ReadLine());
+    targetRange = AskForNumberInRange("Enter desired cannon range", 0, 100);
 
     if (targetRange > manticoreDistance)
         Console.WriteLine("That round OVERSHOT the target.");
